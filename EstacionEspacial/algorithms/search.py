@@ -2,6 +2,7 @@ from algorithms.problems import SearchProblem
 import algorithms.utils as utils
 from world.game import Directions
 from algorithms.heuristics import nullHeuristic
+from algorithms.utils import PriorityQueue
 
 
 def tinyDiagnosticSearch(problem: SearchProblem):
@@ -46,6 +47,21 @@ def uniformCostSearch(problem: SearchProblem):
     """
 
     # TODO: Add your code here
+    visitado = set()
+    priority_q = PriorityQueue()
+    priority_q.push((problem.getStartState(), []), 0)
+
+    while not priority_q.isEmpty():
+        nodo, movimientos = priority_q.pop()
+        if problem.isGoalState(nodo):
+            return movimientos
+        if nodo not in visitado:
+            visitado.add(nodo)
+            for sucesor, accion, costo in problem.getSuccessors(nodo):
+                if sucesor not in visitado:
+                    nueva_lista = movimientos + [accion]
+                    priority_q.push((sucesor, nueva_lista), problem.getCostOfActions(nueva_lista))
+    return None
     utils.raiseNotDefined()
 
 
