@@ -2,7 +2,7 @@ from algorithms.problems import SearchProblem
 import algorithms.utils as utils
 from world.game import Directions
 from algorithms.heuristics import nullHeuristic
-from algorithms.utils import PriorityQueue
+from algorithms.utils import PriorityQueue, Stack, Queue
 
 
 def tinyDiagnosticSearch(problem: SearchProblem):
@@ -30,15 +30,57 @@ def depthFirstSearch(problem: SearchProblem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     # TODO: Add your code here
-    utils.raiseNotDefined()
+    visitado = set()
+    pila = Stack()
+
+    pila.push((problem.getStartState(), []))
+
+    while not pila.isEmpty():
+        nodo, movimientos = pila.pop()
+
+        if problem.isGoalState(nodo):
+            return movimientos
+
+        if nodo not in visitado:
+            visitado.add(nodo)
+            for sucesor, accion, costo in problem.getSuccessors(nodo):
+                if sucesor not in visitado:
+                    nueva_lista = movimientos + [accion]
+                    pila.push((sucesor, nueva_lista))
+
+    return None
 
 
 def breadthFirstSearch(problem: SearchProblem):
     """
     Search the shallowest nodes in the search tree first.
+
+    BFS must minimize the number of actions (moves), not the terrain cost.
+    The frontier is FIFO, and a state is marked visited when it is enqueued,
+    ensuring that the first time a state is discovered corresponds to the
+    shortest path to it in an unweighted graph.
     """
     # TODO: Add your code here
-    utils.raiseNotDefined()
+    inicio = problem.getStartState()
+    visitado = set()
+    cola = Queue()
+    
+    visitado.add(inicio)
+    
+    cola.push((inicio, []))
+
+    while not cola.isEmpty():
+        nodo, movimientos = cola.pop()
+
+        if problem.isGoalState(nodo):
+            return movimientos
+
+        for sucesor, accion, costo in problem.getSuccessors(nodo):
+            if sucesor not in visitado:
+                visitado.add(sucesor)
+                cola.push((sucesor, movimientos + [accion]))
+
+    return None
 
 
 def uniformCostSearch(problem: SearchProblem):
@@ -69,17 +111,18 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """
     Search the node that has the lowest combined cost and heuristic first.
     """
-    visitado = set ()
+    visitado = set()
     priority_q = PriorityQueue()
-    priority_q.push((problem.getStartState(),[],0),heuristic(problem.getStartState(),problem))
-    
+    start = problem.getStartState()
+    priority_q.push((start, [], 0), heuristic(start, problem))
+
     while not priority_q.isEmpty():
-        nodo , movimientos ,costo_g = priority_q.pop()
-        
-        if problem.isGoalState():
-            return movimientos 
-        
-        if nodo not in visitados:
+        nodo, movimientos, costo_g = priority_q.pop()
+
+        if problem.isGoalState(nodo):
+            return movimientos
+
+        if nodo not in visitado:
             visitado.add(nodo)
             for sucesor, accion, stepCost in problem.getSuccessors(nodo):
                 if sucesor not in visitado:
@@ -87,6 +130,8 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
                     nueva_lista = movimientos + [accion]
                     prioridad = nuevo_costo_g + heuristic(sucesor, problem)
                     priority_q.push((sucesor, nueva_lista, nuevo_costo_g), prioridad)
+
+    return None
 
 
 # Abbreviations (you can use them for the -f option in main.py)

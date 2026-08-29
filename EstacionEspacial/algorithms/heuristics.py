@@ -22,12 +22,14 @@ def manhattanHeuristic(state, problem):
     - C if all systems have been repaired.
     """
     position, hasKit, pendingSystems = state
-    
+
     if not hasKit:
-        problem.kitPosition
+        target = problem.kitPosition
     elif len(pendingSystems) > 0:
-        target min( pendingSystems,
-            key=lambda t: abs(position[0] - t[0]) + abs(position[1] - t[1]),)
+        target = min(
+            pendingSystems,
+            key=lambda t: abs(position[0] - t[0]) + abs(position[1] - t[1]),
+        )
     else:
         target = problem.controlPosition
 
