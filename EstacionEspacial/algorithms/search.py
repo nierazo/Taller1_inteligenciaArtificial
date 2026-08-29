@@ -30,10 +30,11 @@ def depthFirstSearch(problem: SearchProblem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     # TODO: Add your code here
+    inicio = problem.getStartState()
     visitado = set()
     pila = Stack()
 
-    pila.push((problem.getStartState(), []))
+    pila.push((inicio, []))
 
     while not pila.isEmpty():
         nodo, movimientos = pila.pop()
